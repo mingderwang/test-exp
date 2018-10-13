@@ -1,56 +1,132 @@
-import React from 'react';
+import Expo from "expo";
+import React from "react";
 import {
-  ProcessingView
-} from 'expo-processing';
+  View,
+  Animated,
+  PanResponder
+} from "react-native";
+
+import * as THREE from "three";
+import ExpoTHREE from "expo-three";
 
 export default class App extends React.Component {
-    render() {
-      return ( <
-        ProcessingView style = {
-          {
-            flex: 1
-          }
-        }
-        sketch = {
-          this._sketch
-        }
-        />
-      );
-    }
+  constructor(props) {
+    super(props);
 
-    _sketch = (p) => {
-        p.setup = () => {
-          p.strokeWeight(7);
+    this.state = {
+      pan: new Animated.ValueXY()
+    };
+  }
+
+  componentWillMount() {
+    this._val = {
+      x: 0,
+      y: 0
+    };
+    this.state.pan.addListener(value => (this._val = value));
+
+    this.panResponder = PanResponder.create({
+      onStartShouldSetPanResponder: (e, gesture) => true,
+      onPanResponderGrant: (e, gesture) => {
+        this.state.pan.setOffset({
+          x: this._val.x,
+          y: this._val.y
+        });
+        this.state.pan.setValue({
+          x: 0,
+          y: 0
+        });
+      },
+      onPanResponderMove: Animated.event([
+        null,
+        {
+          dx: this.state.pan.x,
+          dy: this.state.pan.y
         }
+      ])
+    });
+  }
 
-        const harom = (ax, ay, bx, by, level, ratio) => {
-          if (level <= 0) {
-            return;
-          }
-
-          const vx = bx - ax;
-          const vy = by - ay;
-          const nx = p.cos(p.PI / 3) * vx - p.sin(p.PI / 3) * vy;
-          const ny = p.sin(p.PI / 3) * vx + p.cos(p.PI / 3) * vy;
-          const cx = ax + nx;
-          const cy = ay + ny;
-          p.line(ax, ay, bx, by);
-          p.line(ax, ay, cx, cy);
-          p.line(cx, cy, bx, by);
-
-          harom(
-            ax * ratio + cx * (1 - ratio),
-            ay * ratio + cy * (1 - ratio),
-            ax * (1 - ratio) + bx * ratio,
-            ay * (1 - ratio) + by * ratio,
-            level - 1,
-            ratio);
+  render() {
+    const panStyle = {
+      transform: this.state.pan.getTranslateTransform()
+    };
+    return ( <
+      View style = {
+        {
+          flex: 1,
+          backgroundColor: "black",
+          justifyContent: "center",
+          alignItems: "center"
         }
- p.draw = () => {
-   p.background(240);
-   harom(
-     p.width - 142, p.height - 142, 142, p.height - 142, 6,
-     (p.sin(0.0005 * Date.now() % (2 * p.PI)) + 1) / 2);
- }
-}
+      } >
+      <
+      Animated.View { ...this.panResponder.panHandlers
+      }
+      style = {
+        [panStyle, {
+          width: 200,
+          height: 200
+        }]
+      } >
+      <
+      Expo.GLView style = {
+        {
+          flex: 1
+        }
+      }
+      onContextCreate = {
+        this._onGLContextCreate
+      }
+      /> <
+      /Animated.View> <
+      /View>
+    );
+  }
+
+  _onGLContextCreate = async gl => {
+    const scene = new THREE.Scene();
+
+    const light = new THREE.PointLight(0xff0000, 1, 100);
+    light.position.set(50, 50, 50);
+    scene.add(light)
+
+    const camera = new THREE.PerspectiveCamera(
+      75,
+      gl.drawingBufferWidth / gl.drawingBufferHeight,
+      0.1,
+      1000
+    );
+
+    const renderer = ExpoTHREE.createRenderer({
+      gl
+    });
+    renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
+
+    const geometry = new THREE.SphereBufferGeometry(1, 36, 36);
+    const material = new THREE.MeshBasicMaterial({
+      color: 0xafeeee,
+      map: await ExpoTHREE.createTextureAsync({
+        asset: Expo.Asset.fromModule(require("./img/panorama.png"))
+      })
+    });
+    const sphere = new THREE.Mesh(geometry, material);
+    sphere.castShadow = true;
+
+    scene.add(sphere);
+
+    camera.position.z = 2;
+
+    const render = () => {
+      requestAnimationFrame(render);
+
+      sphere.rotation.x += 0.01;
+      sphere.rotation.y += 0.01;
+
+      renderer.render(scene, camera);
+
+      gl.endFrameEXP();
+    };
+    render();
+  };
 }

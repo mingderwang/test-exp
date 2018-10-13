@@ -13,11 +13,13 @@
     "expo": "27.0.0",
     "expo-pixi": "^0.2.1",
     "expo-processing": "^1.0.3",
+    "expo-three": "^3.0.0-alpha.4",
     "node-libs-browser": "2.1.0",
     "processing-js": "^1.6.6",
     "react": "16.3.1",
     "react-native": "0.55.2",
     "react-navigation": "^2.18.0",
+    "three": "^0.97.0",
     "web3": "1.0.0-beta.34"
   }
 }
