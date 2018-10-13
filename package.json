@@ -10,8 +10,8 @@
     "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf node_modules/ && npm cache verify"
   },
   "dependencies": {
-    "expo": "27.0.1",
-    "expo-pixi": "^0.2.3",
+    "expo": "27.0.0",
+    "expo-pixi": "^0.2.1",
     "node-libs-browser": "2.1.0",
     "react": "16.3.1",
     "react-native": "0.55.2",
