@@ -1,11 +1,14 @@
 {
   "expo": {
-    "name": "test-exp",
-    "description": "This project is really great.",
-    "slug": "test-exp",
+    "name": "test-expo-web3-pixi",
+    "description": "test web3 and pixi together",
+    "slug": "test-expo-web3-pixi",
     "privacy": "public",
     "sdkVersion": "27.0.0",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",

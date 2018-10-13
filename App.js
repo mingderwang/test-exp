@@ -1,5 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
+import Expo from 'expo';
+import ExpoPixi from 'expo-pixi';
 
 import './global';
 
@@ -12,9 +14,16 @@ export default class App extends React.Component {
   render() {
     web3.eth.getBlock('latest').then(console.log);
     return (
-      <View style={styles.container}>
-        <Text>Open up App.js to start working on your app!</Text>
-      </View>
+ <View style={styles.container}>
+  <Expo.GLView
+    style={{ flex: 1 }}
+    onContextCreate={async context => {
+      const app = ExpoPixi.application({ context });
+      const sprite = await ExpoPixi.spriteAsync('http://i.imgur.com/uwrbErh.png');
+      app.stage.addChild(sprite);
+    }}
+  />
+ </View>
     );
   }
 }
@@ -22,7 +31,6 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
     alignItems: 'center',
     justifyContent: 'center',
   },
