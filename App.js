@@ -166,6 +166,7 @@ const colorMatrix = [{
 export default class App extends React.Component {
   state = {
     index: 0,
+    blocknumber: 0,
   };
   web3 = null;
   componentWillMount() {
@@ -175,8 +176,8 @@ export default class App extends React.Component {
     web3 = new Web3(
       new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
 
-  
-    
+
+
 
     const filter = filters => {
       const output = new PIXI.filters.ColorMatrixFilter();
@@ -247,28 +248,32 @@ export default class App extends React.Component {
 
 
   render() {
- const filter = this.filters[this.state.index];
+    const filter = this.filters[this.state.index];
     return ( <
       View style = {
         styles.container
       } >
-      <Button
-        raised
-        icon={{ name: 'home', size: 32 }}
-        buttonStyle={{ backgroundColor: '#ff4f00', borderRadius: 10 }}
-        textStyle={{ textAlign: 'center' }}
-        title={`Welcome to\nReact Native Elements`}
-      />
       <
       TouchableOpacity style = {
         styles.touchable
       }
       onPress = {
         () => {
-          console.log(this.state.index,'-----------------')
-       //   web3.eth.getBlock('latest').then(console.log);
-          console.log(web3, '------ ming --------')
-          console.log('pixi filters', PIXI.filters);
+          console.log(this.state.index, '-----------------')
+          web3.eth.getBlock('latest').then(
+
+            (res) => {
+              console.log('update block number');
+              const blocknumber = res["number"];
+              this.setState({
+                blocknumber
+              })
+             
+            }
+
+          );
+
+          // console.log('pixi filters', PIXI.filters);
           const index = (this.state.index + 1) % this.filters.length;
           this.setState({
             index,
@@ -279,7 +284,7 @@ export default class App extends React.Component {
       <
       Expo.GLView style = {
         {
-          flex: 1 
+          flex: 1
         }
       }
       onContextCreate = {
@@ -291,22 +296,41 @@ export default class App extends React.Component {
           app.stage.addChild(sprite);
         }
       }
-      /> 
-        < ExpoPixi.FilterImage
-        source = {
-          require('./assets/ming.jpg')
+      />  <
+      Button raised buttonStyle = {
+        {
+          backgroundColor: '#ff4f00',
+          borderRadius: 10
         }
-        resizeMode = {
-          'cover'
+      }
+      textStyle = {
+        {
+          textAlign: 'center'
         }
-        style = {
-          styles.image
+      }
+      title = {
+       'block: '+ this.state.blocknumber.toString()
+      }
+      onPress = {
+        () => {
+          console.log(web3, '------ on press button --------')
         }
-        filters = {
-          filter
-        }
-        />
-      < /
+      }
+
+      /> <
+      ExpoPixi.FilterImage source = {
+        require('./assets/ming.jpg')
+      }
+      resizeMode = {
+        'cover'
+      }
+      style = {
+        styles.image
+      }
+      filters = {
+        filter
+      }
+      /> < /
       TouchableOpacity > <
       /View>
     );
