@@ -18,8 +18,10 @@
     "processing-js": "^1.6.6",
     "react": "16.3.1",
     "react-native": "0.55.2",
+    "react-native-elements": "^0.19.1",
     "react-navigation": "^2.18.0",
     "three": "^0.97.0",
+    "truffle-hdwallet-provider": "^0.0.6",
     "web3": "1.0.0-beta.34"
   }
 }

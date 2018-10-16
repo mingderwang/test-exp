@@ -195,14 +195,14 @@ export default class App extends React.Component {
   componentWillMount() {
 
     const Web3 = require('web3');
-    //  web3 = new Web3(
-    //    new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
+    web3 = new Web3(
+    new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
 
+/*
     const mnemonic =
       "process eager attend drill owner area casino convince few cheese crazy license";
     const HDWalletProvider = require("truffle-hdwallet-provider");
     var subscription = null;
-    /*
     web3 = new Web3(
      // Web3.givenProvider ||
          "http://localhost:8545" ||
@@ -210,13 +210,15 @@ export default class App extends React.Component {
     );
     */
 
-    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
+ //   web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
 
+/*
     console.log(web3["_provider"]["addresses"][0])
     this.setState({
       account: web3["_provider"]["addresses"][0]
     });
-    sub(web3)
+    //sub(web3)
+*/
 
     const filter = filters => {
       const output = new PIXI.filters.ColorMatrixFilter();
@@ -363,7 +365,7 @@ export default class App extends React.Component {
       /View>
     );
   }
-
+}
 const styles = StyleSheet.create({
   container: {
     flex: 1,
