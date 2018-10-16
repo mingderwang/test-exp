@@ -14,14 +14,11 @@ import {
 } from 'react-native-elements';
 
 import './global';
-
 const {
   width,
   height
 } = Dimensions.get('window');
 const scale = PixelRatio.get();
-
-
 const colorMatrix = [{
     name: 'reset'
   },
@@ -163,21 +160,63 @@ const colorMatrix = [{
   },
 ];
 
+function sub(web3) {
+  var subscription = web3.eth
+    .subscribe("newBlockHeaders", function (error, success) {
+      if (error) {
+        console.log("error: ", error);
+      }
+      if (success) {
+        console.log("success: ", success);
+      }
+    })
+    .on("data", function (transactionHash) {
+      console.log("D:", transactionHash);
+      web3.eth
+        .getTransaction(transactionHash)
+        .then(function (error, transaction) {
+          if (error) {
+            console.log("E:", error);
+          } else {
+            console.log("T:", transaction);
+          }
+        });
+    });
+  return subscription;
+}
 export default class App extends React.Component {
   state = {
     index: 0,
-    blocknumber: 0,
+    blockNumber: 0,
+    account: "",
+    privateKey: "",
   };
   web3 = null;
   componentWillMount() {
 
-
     const Web3 = require('web3');
+    //  web3 = new Web3(
+    //    new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
+
+    const mnemonic =
+      "process eager attend drill owner area casino convince few cheese crazy license";
+    const HDWalletProvider = require("truffle-hdwallet-provider");
+    var subscription = null;
+    /*
     web3 = new Web3(
-      new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
+     // Web3.givenProvider ||
+         "http://localhost:8545" ||
+      new HDWalletProvider(mnemonic, "wss://ropsten.infura.io/ws")
+    );
+    */
 
+    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
 
-
+    console.log(web3["_provider"]["addresses"][0])
+    this.setState({
+      account: web3["_provider"]["addresses"][0]
+    });
+    sub(web3)
 
     const filter = filters => {
       const output = new PIXI.filters.ColorMatrixFilter();
@@ -245,8 +284,6 @@ export default class App extends React.Component {
     ];
   }
 
-
-
   render() {
     const filter = this.filters[this.state.index];
     return ( <
@@ -259,25 +296,15 @@ export default class App extends React.Component {
       }
       onPress = {
         () => {
-          console.log(this.state.index, '-----------------')
           web3.eth.getBlock('latest').then(
-
             (res) => {
               console.log('update block number');
-              const blocknumber = res["number"];
+              const blockNumber = res["number"];
               this.setState({
-                blocknumber
+                blockNumber
               })
-             
             }
-
           );
-
-          // console.log('pixi filters', PIXI.filters);
-          const index = (this.state.index + 1) % this.filters.length;
-          this.setState({
-            index,
-          });
         }
       } >
 
@@ -309,7 +336,8 @@ export default class App extends React.Component {
         }
       }
       title = {
-       'block: '+ this.state.blocknumber.toString()
+        'block: ' + this.state.blockNumber.toString() +
+        ' # ' + this.state.account
       }
       onPress = {
         () => {
