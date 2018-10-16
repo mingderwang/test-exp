@@ -1,74 +1,313 @@
-import Expo from "expo";
-import React from "react";
+import React from 'react';
 import {
+  Image,
+  StyleSheet,
   View,
-  Animated,
-  PanResponder
-} from "react-native";
+  TouchableOpacity,
+  Dimensions,
+  PixelRatio
+} from 'react-native';
+import Expo from 'expo';
+import ExpoPixi from 'expo-pixi';
+import {
+  Button
+} from 'react-native-elements';
 
-import * as THREE from "three";
-import ExpoTHREE from "expo-three";
-
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      pan: new Animated.ValueXY()
-    };
-  }
-
-  componentWillMount() {
-    this._val = {
-      x: 0,
-      y: 0
-    };
-    this.state.pan.addListener(value => (this._val = value));
-
-    this.panResponder = PanResponder.create({
-      onStartShouldSetPanResponder: (e, gesture) => true,
-      onPanResponderGrant: (e, gesture) => {
-        this.state.pan.setOffset({
-          x: this._val.x,
-          y: this._val.y
-        });
-        this.state.pan.setValue({
-          x: 0,
-          y: 0
-        });
+import './global';
+const {
+  width,
+  height
+} = Dimensions.get('window');
+const scale = PixelRatio.get();
+const colorMatrix = [{
+    name: 'reset'
+  },
+  {
+    name: 'brightness',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.3
+    }],
+  },
+  {
+    name: 'greyscale',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.6
+    }],
+  },
+  {
+    name: 'blackAndWhite'
+  },
+  {
+    name: 'hue',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 360,
+      standard: 180
+    }]
+  },
+  {
+    name: 'contrast',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.8
+    }],
+  },
+  {
+    name: 'saturate',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.8
+    }],
+  },
+  {
+    name: 'desaturate'
+  },
+  {
+    name: 'negative'
+  },
+  {
+    name: 'sepia'
+  },
+  {
+    name: 'technicolor',
+    tools: [{
+      type: 'boolean',
+      standard: true
+    }]
+  },
+  {
+    name: 'polaroid'
+  },
+  {
+    name: 'toBGR'
+  },
+  {
+    name: 'kodachrome',
+    tools: [{
+      type: 'boolean',
+      standard: true
+    }]
+  },
+  {
+    name: 'browni',
+    tools: [{
+      type: 'boolean',
+      standard: true
+    }]
+  },
+  {
+    name: 'vintage',
+    tools: [{
+      type: 'boolean',
+      standard: true
+    }]
+  },
+  {
+    name: 'colorTone',
+    tools: [{
+        type: 'number',
+        min: 0,
+        max: 1,
+        standard: 0.5
       },
-      onPanResponderMove: Animated.event([
-        null,
-        {
-          dx: this.state.pan.x,
-          dy: this.state.pan.y
-        }
-      ])
+      {
+        type: 'number',
+        min: 0,
+        max: 1,
+        standard: 0.5
+      },
+      {
+        type: 'color',
+        standard: 0xff0000
+      },
+      {
+        type: 'color',
+        standard: 0x000011
+      },
+    ],
+  },
+  {
+    name: 'night',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.5
+    }]
+  },
+  {
+    name: 'predator',
+    tools: [{
+      type: 'number',
+      min: 0,
+      max: 1,
+      standard: 0.5
+    }],
+  },
+  {
+    name: 'lsd'
+  },
+];
+
+function sub(web3) {
+  var subscription = web3.eth
+    .subscribe("newBlockHeaders", function (error, success) {
+      if (error) {
+        console.log("error: ", error);
+      }
+      if (success) {
+        console.log("success: ", success);
+      }
+    })
+    .on("data", function (transactionHash) {
+      console.log("D:", transactionHash);
+      web3.eth
+        .getTransaction(transactionHash)
+        .then(function (error, transaction) {
+          if (error) {
+            console.log("E:", error);
+          } else {
+            console.log("T:", transaction);
+          }
+        });
     });
+  return subscription;
+}
+export default class App extends React.Component {
+  state = {
+    index: 0,
+    blockNumber: 0,
+    account: "",
+    privateKey: "",
+  };
+  web3 = null;
+  componentWillMount() {
+
+    const Web3 = require('web3');
+    //  web3 = new Web3(
+    //    new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
+
+    const mnemonic =
+      "process eager attend drill owner area casino convince few cheese crazy license";
+    const HDWalletProvider = require("truffle-hdwallet-provider");
+    var subscription = null;
+    /*
+    web3 = new Web3(
+     // Web3.givenProvider ||
+         "http://localhost:8545" ||
+      new HDWalletProvider(mnemonic, "wss://ropsten.infura.io/ws")
+    );
+    */
+
+    web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
+
+    console.log(web3["_provider"]["addresses"][0])
+    this.setState({
+      account: web3["_provider"]["addresses"][0]
+    });
+    sub(web3)
+
+    const filter = filters => {
+      const output = new PIXI.filters.ColorMatrixFilter();
+      if (Array.isArray(filters)) {
+        filters.map(item => {
+          if (typeof item === 'string') {
+            output[item]();
+          } else {
+            const {
+              name,
+              props
+            } = item;
+            output[name](...props);
+          }
+        });
+      } else {
+        return filter([filters]);
+      }
+      return output;
+    };
+
+    const parsedColorMatrix = colorMatrix.map(({
+      name,
+      tools
+    }) => {
+      return filter({
+        name: name,
+        props: (tools || []).map(tool => tool.standard),
+      });
+    });
+
+    this.filters = [
+      new PIXI.filters.ColorReplaceFilter(0x000000, 0xff0000),
+      new PIXI.filters.DotFilter(0.5),
+      new PIXI.filters.EmbossFilter(),
+      new PIXI.filters.PixelateFilter(),
+      new PIXI.filters.CrossHatchFilter(),
+      new PIXI.filters.NoiseFilter(),
+      new PIXI.filters.OldFilmFilter(),
+      new PIXI.filters.RGBSplitFilter(),
+
+      new PIXI.filters.GlowFilter(30, 2, 0.5, 0xff0000),
+      new PIXI.filters.BulgePinchFilter([0.5, 0.2], 300, 1),
+      new PIXI.filters.MotionBlurFilter([54, 40], 15, 0),
+      new PIXI.filters.DropShadowFilter(),
+      new PIXI.filters.RadialBlurFilter(45, [width * scale / 2, height * scale / 2], 8, width),
+      new PIXI.filters.AdvancedBloomFilter(),
+      new PIXI.filters.BlurFilter(),
+      new PIXI.filters.TwistFilter(400, 4, 20),
+      new PIXI.filters.BloomFilter(),
+      new PIXI.filters.OutlineFilter(20, 0x00fc00, 1),
+      new PIXI.filters.ZoomBlurFilter(),
+
+      // new PIXI.filters.AlphaFilter(),
+      // new PIXI.filters.AsciiFilter(),
+      // new PIXI.filters.ConvolutionFilter(),
+      // new PIXI.filters.DisplacementFilter(),
+      // new PIXI.filters.TiltShiftFilter(),
+      // new PIXI.filters.GodrayFilter(),
+      // new PIXI.filters.SimpleLightmapFilter(),
+      // new PIXI.filters.MultiColorReplaceFilter(),
+      // new PIXI.filters.ShockwaveFilter(),
+
+      ...parsedColorMatrix,
+    ];
   }
 
   render() {
-    const panStyle = {
-      transform: this.state.pan.getTranslateTransform()
-    };
+    const filter = this.filters[this.state.index];
     return ( <
       View style = {
-        {
-          flex: 1,
-          backgroundColor: "black",
-          justifyContent: "center",
-          alignItems: "center"
-        }
+        styles.container
       } >
       <
-      Animated.View { ...this.panResponder.panHandlers
+      TouchableOpacity style = {
+        styles.touchable
       }
-      style = {
-        [panStyle, {
-          width: 200,
-          height: 200
-        }]
+      onPress = {
+        () => {
+          web3.eth.getBlock('latest').then(
+            (res) => {
+              console.log('update block number');
+              const blockNumber = res["number"];
+              this.setState({
+                blockNumber
+              })
+            }
+          );
+        }
       } >
+
       <
       Expo.GLView style = {
         {
@@ -76,57 +315,68 @@ export default class App extends React.Component {
         }
       }
       onContextCreate = {
-        this._onGLContextCreate
+        async context => {
+          const app = ExpoPixi.application({
+            context
+          });
+          const sprite = await ExpoPixi.spriteAsync('http://i.imgur.com/uwrbErh.png');
+          app.stage.addChild(sprite);
+        }
       }
+      />  <
+      Button raised buttonStyle = {
+        {
+          backgroundColor: '#ff4f00',
+          borderRadius: 10
+        }
+      }
+      textStyle = {
+        {
+          textAlign: 'center'
+        }
+      }
+      title = {
+        'block: ' + this.state.blockNumber.toString() +
+        ' # ' + this.state.account
+      }
+      onPress = {
+        () => {
+          console.log(web3, '------ on press button --------')
+        }
+      }
+
       /> <
-      /Animated.View> <
+      ExpoPixi.FilterImage source = {
+        require('./assets/ming.jpg')
+      }
+      resizeMode = {
+        'cover'
+      }
+      style = {
+        styles.image
+      }
+      filters = {
+        filter
+      }
+      /> < /
+      TouchableOpacity > <
       /View>
     );
   }
 
-  _onGLContextCreate = async gl => {
-    const scene = new THREE.Scene();
-
-    const light = new THREE.PointLight(0xff0000, 1, 100);
-    light.position.set(50, 50, 50);
-    scene.add(light)
-
-    const camera = new THREE.PerspectiveCamera(
-      75,
-      gl.drawingBufferWidth / gl.drawingBufferHeight,
-      0.1,
-      1000
-    );
-
-    const renderer = ExpoTHREE.createRenderer({
-      gl
-    });
-    renderer.setSize(gl.drawingBufferWidth, gl.drawingBufferHeight);
-
-    const geometry = new THREE.SphereBufferGeometry(1, 36, 36);
-    const material = new THREE.MeshBasicMaterial({
-      color: 0xafeeee,
-      map: await ExpoTHREE.createTextureAsync({
-        asset: Expo.Asset.fromModule(require("./img/panorama.png"))
-      })
-    });
-    const sphere = new THREE.Mesh(geometry, material);
-    sphere.castShadow = true;
-
-    scene.add(sphere);
-
-    camera.position.z = 2;
-
-    const render = () => {
-      requestAnimationFrame(render);
-
-      sphere.rotation.x += 0.01;
-      sphere.rotation.y += 0.01;
-
-      renderer.render(scene, camera);
-
-      gl.endFrameEXP();
-    };
-    render();
-  };
-}
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'orange',
+  },
+  touchable: {
+    flex: 1,
+    backgroundColor: 'green',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+    flex: 1,
+    backgroundColor: 'white',
+  },
+});
