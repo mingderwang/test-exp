@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   Image,
   StyleSheet,
@@ -6,163 +6,183 @@ import {
   TouchableOpacity,
   Dimensions,
   PixelRatio
-} from 'react-native';
-import Expo from 'expo';
-import ExpoPixi from 'expo-pixi';
-import {
-  Button
-} from 'react-native-elements';
+} from "react-native";
+import Expo from "expo";
+import ExpoPixi from "expo-pixi";
+import { Button } from "react-native-elements";
+import TouchableView from './TouchableView';
 
-import './global';
-const {
-  width,
-  height
-} = Dimensions.get('window');
+import "./global";
+const { width, height } = Dimensions.get("window");
 const scale = PixelRatio.get();
-const colorMatrix = [{
-    name: 'reset'
+const colorMatrix = [
+  {
+    name: "reset"
   },
   {
-    name: 'brightness',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.3
-    }],
+    name: "brightness",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.3
+      }
+    ]
   },
   {
-    name: 'greyscale',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.6
-    }],
+    name: "greyscale",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.6
+      }
+    ]
   },
   {
-    name: 'blackAndWhite'
+    name: "blackAndWhite"
   },
   {
-    name: 'hue',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 360,
-      standard: 180
-    }]
+    name: "hue",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 360,
+        standard: 180
+      }
+    ]
   },
   {
-    name: 'contrast',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.8
-    }],
+    name: "contrast",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.8
+      }
+    ]
   },
   {
-    name: 'saturate',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.8
-    }],
+    name: "saturate",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.8
+      }
+    ]
   },
   {
-    name: 'desaturate'
+    name: "desaturate"
   },
   {
-    name: 'negative'
+    name: "negative"
   },
   {
-    name: 'sepia'
+    name: "sepia"
   },
   {
-    name: 'technicolor',
-    tools: [{
-      type: 'boolean',
-      standard: true
-    }]
+    name: "technicolor",
+    tools: [
+      {
+        type: "boolean",
+        standard: true
+      }
+    ]
   },
   {
-    name: 'polaroid'
+    name: "polaroid"
   },
   {
-    name: 'toBGR'
+    name: "toBGR"
   },
   {
-    name: 'kodachrome',
-    tools: [{
-      type: 'boolean',
-      standard: true
-    }]
+    name: "kodachrome",
+    tools: [
+      {
+        type: "boolean",
+        standard: true
+      }
+    ]
   },
   {
-    name: 'browni',
-    tools: [{
-      type: 'boolean',
-      standard: true
-    }]
+    name: "browni",
+    tools: [
+      {
+        type: "boolean",
+        standard: true
+      }
+    ]
   },
   {
-    name: 'vintage',
-    tools: [{
-      type: 'boolean',
-      standard: true
-    }]
+    name: "vintage",
+    tools: [
+      {
+        type: "boolean",
+        standard: true
+      }
+    ]
   },
   {
-    name: 'colorTone',
-    tools: [{
-        type: 'number',
+    name: "colorTone",
+    tools: [
+      {
+        type: "number",
         min: 0,
         max: 1,
         standard: 0.5
       },
       {
-        type: 'number',
+        type: "number",
         min: 0,
         max: 1,
         standard: 0.5
       },
       {
-        type: 'color',
+        type: "color",
         standard: 0xff0000
       },
       {
-        type: 'color',
+        type: "color",
         standard: 0x000011
-      },
-    ],
+      }
+    ]
   },
   {
-    name: 'night',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.5
-    }]
+    name: "night",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.5
+      }
+    ]
   },
   {
-    name: 'predator',
-    tools: [{
-      type: 'number',
-      min: 0,
-      max: 1,
-      standard: 0.5
-    }],
+    name: "predator",
+    tools: [
+      {
+        type: "number",
+        min: 0,
+        max: 1,
+        standard: 0.5
+      }
+    ]
   },
   {
-    name: 'lsd'
-  },
+    name: "lsd"
+  }
 ];
 
 function sub(web3) {
   var subscription = web3.eth
-    .subscribe("newBlockHeaders", function (error, success) {
+    .subscribe("newBlockHeaders", function(error, success) {
       if (error) {
         console.log("error: ", error);
       }
@@ -170,11 +190,11 @@ function sub(web3) {
         console.log("success: ", success);
       }
     })
-    .on("data", function (transactionHash) {
+    .on("data", function(transactionHash) {
       console.log("D:", transactionHash);
       web3.eth
         .getTransaction(transactionHash)
-        .then(function (error, transaction) {
+        .then(function(error, transaction) {
           if (error) {
             console.log("E:", error);
           } else {
@@ -189,16 +209,18 @@ export default class App extends React.Component {
     index: 0,
     blockNumber: 0,
     account: "",
-    privateKey: "",
+    privateKey: ""
   };
   web3 = null;
+  app = null;
   componentWillMount() {
-
-    const Web3 = require('web3');
+    app = require("./Examples/Demos/TextureSwap").default;
+    const Web3 = require("web3");
     web3 = new Web3(
-    new Web3.providers.HttpProvider('https://mainnet.infura.io/'));
+      new Web3.providers.HttpProvider("https://mainnet.infura.io/")
+    );
 
-/*
+    /*
     const mnemonic =
       "process eager attend drill owner area casino convince few cheese crazy license";
     const HDWalletProvider = require("truffle-hdwallet-provider");
@@ -210,9 +232,9 @@ export default class App extends React.Component {
     );
     */
 
- //   web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
+    //   web3 = new Web3(new Web3.providers.WebsocketProvider('ws://localhost:8545/ws'))
 
-/*
+    /*
     console.log(web3["_provider"]["addresses"][0])
     this.setState({
       account: web3["_provider"]["addresses"][0]
@@ -224,13 +246,10 @@ export default class App extends React.Component {
       const output = new PIXI.filters.ColorMatrixFilter();
       if (Array.isArray(filters)) {
         filters.map(item => {
-          if (typeof item === 'string') {
+          if (typeof item === "string") {
             output[item]();
           } else {
-            const {
-              name,
-              props
-            } = item;
+            const { name, props } = item;
             output[name](...props);
           }
         });
@@ -240,13 +259,10 @@ export default class App extends React.Component {
       return output;
     };
 
-    const parsedColorMatrix = colorMatrix.map(({
-      name,
-      tools
-    }) => {
+    const parsedColorMatrix = colorMatrix.map(({ name, tools }) => {
       return filter({
         name: name,
-        props: (tools || []).map(tool => tool.standard),
+        props: (tools || []).map(tool => tool.standard)
       });
     });
 
@@ -264,7 +280,12 @@ export default class App extends React.Component {
       new PIXI.filters.BulgePinchFilter([0.5, 0.2], 300, 1),
       new PIXI.filters.MotionBlurFilter([54, 40], 15, 0),
       new PIXI.filters.DropShadowFilter(),
-      new PIXI.filters.RadialBlurFilter(45, [width * scale / 2, height * scale / 2], 8, width),
+      new PIXI.filters.RadialBlurFilter(
+        45,
+        [(width * scale) / 2, (height * scale) / 2],
+        8,
+        width
+      ),
       new PIXI.filters.AdvancedBloomFilter(),
       new PIXI.filters.BlurFilter(),
       new PIXI.filters.TwistFilter(400, 4, 20),
@@ -282,103 +303,52 @@ export default class App extends React.Component {
       // new PIXI.filters.MultiColorReplaceFilter(),
       // new PIXI.filters.ShockwaveFilter(),
 
-      ...parsedColorMatrix,
+      ...parsedColorMatrix
     ];
   }
 
   render() {
     const filter = this.filters[this.state.index];
-    return ( <
-      View style = {
-        styles.container
-      } >
-      <
-      TouchableOpacity style = {
-        styles.touchable
-      }
-      onPress = {
-        () => {
-          web3.eth.getBlock('latest').then(
-            (res) => {
-              console.log('update block number');
-              const blockNumber = res["number"];
-              this.setState({
-                blockNumber
-              })
-            }
-          );
-        }
-      } >
-
-      <
-      Expo.GLView style = {
-        {
-          flex: 1
-        }
-      }
-      onContextCreate = {
-        async context => {
-          const app = ExpoPixi.application({
-            context
-          });
-          const sprite = await ExpoPixi.spriteAsync('http://i.imgur.com/uwrbErh.png');
-          app.stage.addChild(sprite);
-        }
-      }
-      />  <
-      Button raised buttonStyle = {
-        {
-          backgroundColor: '#ff4f00',
-          borderRadius: 10
-        }
-      }
-      textStyle = {
-        {
-          textAlign: 'center'
-        }
-      }
-      title = {
-        'block: ' + this.state.blockNumber.toString() +
-        ' # ' + this.state.account
-      }
-      onPress = {
-        () => {
-          console.log(web3, '------ on press button --------')
-        }
-      }
-
-      /> <
-      ExpoPixi.FilterImage source = {
-        require('./assets/ming.jpg')
-      }
-      resizeMode = {
-        'cover'
-      }
-      style = {
-        styles.image
-      }
-      filters = {
-        filter
-      }
-      /> < /
-      TouchableOpacity > <
-      /View>
+    return (
+<TouchableView
+    id="pixi-view"
+    style={{ flex: 1 }}
+    onTouchesBegan={({ locationX: x, locationY: y }) => this.began && this.began(scaled({ x, y }))}
+    onTouchesMoved={({ locationX: x, locationY: y }) => this.moved && this.moved(scaled({ x, y }))}
+    onTouchesEnded={({ locationX: x, locationY: y }) => this.ended && this.ended(scaled({ x, y }))}
+    onTouchesCancelled={({ locationX: x, locationY: y }) =>
+      this.cancelled ? this.cancelled(scaled({ x, y })) : this.ended && this.ended(scaled({ x, y }))
+    }>
+      <View
+        style={styles.touchable}
+        >
+        <Expo.GLView
+          style={{
+            flex: 1
+          }}
+          onContextCreate={async context => {
+            const events = (await app(context));
+            console.log(events);
+          }}
+        />
+        </View>
+</TouchableView>
     );
   }
 }
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: 'orange',
+    backgroundColor: "orange"
   },
   touchable: {
     flex: 1,
-    backgroundColor: 'green',
+    backgroundColor: "green"
   },
   image: {
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
     flex: 1,
-    backgroundColor: 'white',
-  },
+    backgroundColor: "white"
+  }
 });

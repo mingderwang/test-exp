@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "test-ming-pixi-filter",
-    "description": "test pixi filter",
-    "slug": "test-ming-pixi-filter",
+    "name": "test-ming-pixi-click",
+    "description": "test pixi web3 on click",
+    "slug": "test-ming-pixi-click",
     "privacy": "public",
     "sdkVersion": "27.0.0",
     "platforms": [
