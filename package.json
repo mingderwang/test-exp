@@ -7,7 +7,8 @@
     "android": "expo start --android",
     "ios": "expo start --ios",
     "eject": "expo eject",
-    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf node_modules/ && npm cache verify"
+    "clean": "watchman watch-del-all && rm -rf $TMPDIR/react-* && rm -rf node_modules/ && npm cache verify",
+    "redux-devtool": "remotedev"
   },
   "dependencies": {
     "expo": "27.0.0",
@@ -20,8 +21,12 @@
     "react-native": "0.55.2",
     "react-native-elements": "^0.19.1",
     "react-navigation": "^2.18.0",
+    "remotedev": "^0.2.7",
     "three": "^0.97.0",
     "truffle-hdwallet-provider": "^0.0.6",
     "web3": "1.0.0-beta.34"
+  },
+  "devDependencies": {
+    "react-devtools": "^3.4.1"
   }
 }

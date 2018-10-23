@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "test-ming-pixi-click",
+    "name": "test-ming-blockNumber",
     "description": "test pixi web3 on click",
-    "slug": "test-ming-pixi-click",
+    "slug": "test-ming-blocknumber",
     "privacy": "public",
     "sdkVersion": "27.0.0",
     "platforms": [
