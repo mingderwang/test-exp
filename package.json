@@ -11,6 +11,7 @@
     "redux-devtool": "remotedev"
   },
   "dependencies": {
+    "bluebird": "^3.5.2",
     "expo": "27.0.0",
     "expo-pixi": "^0.2.1",
     "expo-processing": "^1.0.3",
@@ -24,7 +25,7 @@
     "remotedev": "^0.2.7",
     "three": "^0.97.0",
     "truffle-hdwallet-provider": "^0.0.6",
-    "web3": "1.0.0-beta.34"
+    "web3": "1.0.0-beta.36"
   },
   "devDependencies": {
     "react-devtools": "^3.4.1"
