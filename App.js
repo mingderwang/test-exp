@@ -15,9 +15,10 @@ export default class App extends React.Component {
       titleText: "waiting for data",
       account: "creating...",
       balance: "0",
-      amount: 0,
+      amount: "0",
+      his_amount: "0",
       symbol: "",
-      result: "from function call"
+      result: "<< waiting for confirm... >>"
     };
   }
   async componentWillMount() {
@@ -35,15 +36,75 @@ export default class App extends React.Component {
     this.setState({
       titleText: blockNumber
     });
-    var contract = TruffleContract(message);
+    var contract = TruffleContract(abi);
     contract.setProvider(hd);
     //contract_address = "0xed272846b5283cae9970068cc711cd7fa6b37b54";
-    contract_address = "0xe8af929b1365c06946cf50db3e6dd5599ac33baf";
+    contract_address = "0x283566C6B764679efa6772970FF1128446Fe49CC";
+    //contract_address = "0xe8af929b1365c06946cf50db3e6dd5599ac33baf";
+    /*
     let ins = await contract.at(contract_address);
-    let res = await ins.getMessage();
+    let res = await ins.symbol();
     this.setState({
-      result: res
+      symbol: res
     })
+    */
+    contract
+      .at(contract_address)
+      .then(function(instance) {
+        coin = instance;
+        res = coin.symbol();
+        return res;
+      })
+      .then(
+        function(res) {
+          this.setState({ symbol: res.toString() });
+        }.bind(this)
+      )
+      .then(
+        function() {
+          res = coin.balanceOf(this.state.account);
+          return res;
+        }.bind(this)
+      )
+      .then(
+        function(res) {
+          this.setState({ amount: res.toString() });
+        }.bind(this)
+      )
+      .then(
+        function() {
+          res = coin.transfer(
+            "0x66Ee73086134f147745BE72335153Bf780499E2e",
+            5000000000000000000,
+            { from: this.state.account }
+          );
+          return res;
+        }.bind(this)
+      )
+      .then(
+        function(result) {
+          // If this callback is called, the transaction was successfully processed.
+          console.log(result);
+
+          this.setState({ result: "transfer sent" });
+        }.bind(this)
+      )
+      .then(function() {
+        res = coin.balanceOf("0x66Ee73086134f147745BE72335153Bf780499E2e");
+        return res;
+      })
+      .then(
+        function(res) {
+          this.setState({ his_amount: res.toString() });
+        }.bind(this)
+      )
+      .catch(
+        function(err) {
+          // Easily catch all errors along the whole execution.
+          console.log("ERROR! " + err.message);
+          this.setState({ result: "ERROR! " + err.message });
+        }.bind(this)
+      );
   }
 
   render() {
@@ -63,10 +124,15 @@ export default class App extends React.Component {
           <Text color="#ffffff">{this.state.account}</Text>
           <Text> Token Symbol: </Text>
           <Text color="#ffffff">{this.state.symbol}</Text>
-          <Text> Total Supply: </Text>
+          <Text> My Total Amount : </Text>
           <Text color="#ffffff">{this.state.amount}</Text>
-          <Text> function call: </Text>
+          <Text>
+            {" "}
+            transfer 5 tokens to 0x66Ee73086134f147745BE72335153Bf780499E2e:{" "}
+          </Text>
           <Text color="#ffffff">{this.state.result}</Text>
+          <Text> His Total Amount : </Text>
+          <Text color="#ffffff">{this.state.his_amount}</Text>
         </View>
       </View>
     );
